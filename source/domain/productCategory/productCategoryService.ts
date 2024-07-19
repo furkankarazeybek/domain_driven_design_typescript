@@ -29,7 +29,6 @@ export class ProductCategoryService {
    async getCategoriesById (categoryIds: string[]){
 
     const collection = await this.productCategoryRepository.findCategoriesByIds(categoryIds);
-    console.log(collection);
     const objectIds = categoryIds.map(id => new ObjectId(id));
     return await collection.find({ _id: { $in: objectIds } }).toArray();
 

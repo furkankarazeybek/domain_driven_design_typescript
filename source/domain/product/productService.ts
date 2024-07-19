@@ -39,7 +39,6 @@ export class ProductService {
 
     const collection = await this.productRepository.findProductsByIds(productIds);
     const objectIds = this.productFactory.generateProduct(productIds);
-    console.log(collection);
     return collection.find({ _id: { $in: objectIds } }).toArray();  // mongodb kalkacak
     
 

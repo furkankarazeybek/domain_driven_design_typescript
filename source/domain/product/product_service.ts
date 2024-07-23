@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb';
-import { ProductRepository } from './productRepository';
-import { ProductFactory } from './productFactory';
+import { ProductRepository } from './product_repository';
+import { ProductFactory } from './product_factory';
 
 
 export interface IProduct {

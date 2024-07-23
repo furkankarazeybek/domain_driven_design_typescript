@@ -1,5 +1,5 @@
 import { MongoClient, ObjectId } from "mongodb";
-import { ProductCategoryRepository } from "./productCategoryRepository";
+import { ProductCategoryRepository } from "./product_category_repository";
 
 
 export interface IProductCategory {

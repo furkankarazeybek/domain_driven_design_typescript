@@ -1,9 +1,8 @@
 import express from 'express';
-import { UserService } from '../../domain/user/userService';
-import { ProductService } from '../../domain/product/productService';
-import { convertToUserDTO } from '../dto';
-import { userDto } from './userDto';
-import { productDto } from '../productService/productDto';
+import { UserService } from '../../domain/user/user_service';
+import { ProductService } from '../../domain/product/product_service';
+import { userDto } from './user_dto';
+import { productDto } from '../product_service/product_dto';
 
 const userRouter = express.Router();
 const userService= new UserService();
@@ -14,48 +13,41 @@ userRouter.get('/getAllUsers', async (req, res) => {
   try {
       const users = await userService.getAllUsers();
       const products = await productService.getAllProducts();
+      console.log("users list", users);
 
       const dtoUser = new userDto();
       const usersProductIds =  dtoUser.userProductIdsDto(users);
       console.log(usersProductIds);
+
+
+                      
+      const productNumber = users.map(user => user.productIds.length);
       
-      const dtoProduct = new productDto();
-      const productsArray: any= dtoProduct.productIdsDto(products);
-      console.log(productsArray);
-
-  
-
-   
-  
-    
-
-      let usersListWithProducts: { _id: string, userName: string, products: { productId: string, productName: string }[] }[] = [];
-
-      for (const user of users) {
-        const userProducts: any[] = [];
-
-        for (let i = 0; i < usersProductIds.length; i++) {
-          const productId = usersProductIds[i];
-        
-          const product = productsArray.find((p:any) => p._id === productId);
-
-          console.log(product);
-        
-          if (product) {
-            userProducts.push(product);
-          }
-        }
-        
+      const usersListWithProducts: any[] = [];
+           
+         for (let userIndex = 0; userIndex < users.length; userIndex++) {
+           const user = users[userIndex];
+           const userProducts: any[] = [];
+           const usersProductIds = user.productIds; 
+           const numberOfProductsToAssign = productNumber[userIndex];
+         
+           for (let i = 0; i < numberOfProductsToAssign; i++) {
+             const productId = usersProductIds[i];
+             const product = products.find((p: any) => p._id.toHexString() === productId);
+         
+             if (product) {
+               userProducts.push(product);
+             }
+           }
+         
+           usersListWithProducts.push({
+             _id: user._id.toHexString(),
+             userName: user.userName,
+             products: userProducts
+           });
+         }
 
 
-
-        
-        usersListWithProducts.push({
-          _id: user._id.toHexString(),
-          userName: user.userName,
-          products: userProducts
-        });
-      }
       
       console.log(usersListWithProducts);
   

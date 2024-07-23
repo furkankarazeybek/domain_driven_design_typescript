@@ -1,7 +1,6 @@
 import express from 'express';
-import { ProductService } from '../../domain/product/productService';
-import { ProductCategoryService } from '../../domain/productCategory/productCategoryService';
-import { convertToProductDTO, convertToUserDTO } from '../dto';
+import { ProductService } from '../../domain/product/product_service';
+import { ProductCategoryService } from '../../domain/product_category/product_category_service';
 
 
 
@@ -14,16 +13,12 @@ const productCategoryService = new ProductCategoryService();
 
 
 
+
+
+
 productRouter.get('/getAllproducts', async (req, res) => {
     try {
-        const products = await productService.getAllProducts();
-        const productCategories = await productCategoryService.getAllProductCategories();
-        const productsWithCategories = await convertToProductDTO(products, productCategories ); 
-        
-
-
-        
-        res.json(productsWithCategories);
+      
     } catch (error) {
         console.error("Error while fetching products:", error);
         res.status(500).json({ error: 'Internal server error' });

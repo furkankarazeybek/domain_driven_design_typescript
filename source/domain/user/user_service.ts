@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { ProductRepository } from '../product/productRepository';
-import { UserRepository } from './userRepository';
+import { ProductRepository } from '../product/product_repository';
+import { UserRepository } from './user_repository';
 
 
 export interface IUser {

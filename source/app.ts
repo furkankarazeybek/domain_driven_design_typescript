@@ -1,7 +1,7 @@
 import express from 'express';
-import { productRouter } from './application/product_service/product';
-import { productCategoryRouter } from './application/product_service/product';
-import { userRouter } from './application/user_service/user';
+import { productRouter } from './application/product-service/product';
+import { productCategoryRouter } from './application/product-service/product';
+import { userRouter } from './application/user-service/user';
 import connectDB from './utils/db';
 
 

@@ -7,14 +7,19 @@ import { inject, injectable } from "inversify";
 @injectable()
 export class RoleService {
   private roleRepository: RoleRepository;
+  private roleFactory: RoleFactory;
 
-  constructor(@inject(TYPES.RoleRepository) roleRepository: RoleRepository) 
+  constructor(
+    @inject(TYPES.RoleRepository) roleRepository: RoleRepository,
+    @inject(TYPES.UserFactory) roleFactory: RoleFactory
+  ) 
   {
-    this.roleRepository = new RoleRepository();
+    this.roleFactory = roleFactory;
+    this.roleRepository = roleRepository;
   }
 
   async createRole(roleId: number, roleName: string): Promise<IRole> {
-    const role = RoleFactory.createRole(roleId, roleName);
+    const role = this.roleFactory.createRole(roleId, roleName);
     return this.roleRepository.createRole(role);
   }
 

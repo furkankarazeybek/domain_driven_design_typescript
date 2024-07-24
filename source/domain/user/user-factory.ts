@@ -1,8 +1,17 @@
-import { injectable } from 'inversify';
-import { IUser, User } from './user-model';
+import { injectable, inject } from 'inversify';
+import { Model } from 'mongoose';
+import { IUser } from './user-model';
+import { TYPES } from '../../../types';
 
+@injectable()
 export class UserFactory {
-  static createUser(userName: string, roleId: string): IUser {
-    return new User({ userName, roleId });
+  private userModel: Model<IUser>;
+
+  constructor(@inject(TYPES.UserModel) userModel: Model<IUser>) {
+    this.userModel = userModel;
+  }
+
+  createUser(userName: string, roleId: string): IUser {
+    return new this.userModel({ userName, roleId });
   }
 }

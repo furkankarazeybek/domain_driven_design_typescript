@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IRole extends Document {
+  roleId: number;
   roleName: string;
 }
 

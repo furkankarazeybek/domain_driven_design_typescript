@@ -7,14 +7,21 @@ import { TYPES } from '../../../types';
 @injectable() 
 export class UserRoleService {
   private userRoleRepository: UserRoleRepository;
+  private userRoleFactory: UserRoleFactory;
 
-  constructor(@inject(TYPES.UserRoleRepository) userRoleRepository: UserRoleRepository)
+  constructor(
+    @inject(TYPES.UserRoleRepository) userRoleRepository: UserRoleRepository,
+    @inject(TYPES.UserRoleFactory) userRoleFactory: UserRoleFactory,
+
+  )
   {
     this.userRoleRepository = userRoleRepository;
+    this.userRoleFactory = userRoleFactory;
   }
 
   async createUserRole(userId: string, roleId: string): Promise<IUserRole> {
-    const userRole = UserRoleFactory.createUserRole(userId, roleId);
+    const userRole = this.userRoleFactory.createUser(userId, roleId);
+    console.log(userRole);
     return this.userRoleRepository.createUserRole(userRole);
   }
 

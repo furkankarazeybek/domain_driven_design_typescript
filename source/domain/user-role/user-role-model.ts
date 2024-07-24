@@ -1,8 +1,8 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUserRole extends Document {
-  userId: mongoose.Types.ObjectId;
-  roleId: mongoose.Types.ObjectId;
+  userId: String;
+  roleId: String;
 }
 
 const UserRoleSchema: Schema = new Schema({

@@ -28,5 +28,4 @@ const UserSchema: Schema = new Schema({
 //       console.error('Error adding userRole:', error);
 //     }
 //   });
-
 export const User = mongoose.model<IUser>('User', UserSchema);

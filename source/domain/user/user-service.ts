@@ -6,16 +6,21 @@ import { TYPES } from '../../../types';
 
 @injectable()
 export class UserService {
+  private userFactory: UserFactory;
   private userRepository: UserRepository;
 
-  constructor(@inject(TYPES.UserRepository) userRepository: UserRepository) 
-  {
-    this.userRepository = new UserRepository();
+  constructor(
+    @inject(TYPES.UserFactory) userFactory: UserFactory,
+    @inject(TYPES.UserRepository) userRepository: UserRepository
+  ) {
+    this.userFactory = userFactory;
+    this.userRepository = userRepository;
   }
 
-  async createUser(userName: string, roleId: string): Promise<IUser> {
 
-    const user = UserFactory.createUser(userName, roleId);
+  async createUser(userName: string, roleId: string): Promise<IUser> {
+    
+    const user = this.userFactory.createUser(userName, roleId);
     return this.userRepository.createUser(user);
 
   }

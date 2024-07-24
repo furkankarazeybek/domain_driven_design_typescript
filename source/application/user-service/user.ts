@@ -4,6 +4,7 @@ import { RoleService } from "../../domain/role/role-service";
 import { UserRoleService } from "../../domain/user-role/user-role-service";
 import { UserService } from "../../domain/user/user-service";
 import express from 'express';
+import { UserDto } from "./userDto";
 
 const userRouter = express.Router();
 
@@ -14,12 +15,20 @@ const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
 userRouter.get('/users', async (req, res) => {
   try {
     const users = await userService.getAllUsers();
-    res.json(users);
+    const roles = await roleService.getAllRoles();
+    const userRoleIds = UserDto.getRoleIdsFromEntities(users,roles);
+
+
     
+
+    res.json(userRoleIds);
+
   } catch (error) {
     res.status(500).send(error);
   }
 });
+
+
 
 userRouter.post('/addUser', async (req, res) => {
   try {

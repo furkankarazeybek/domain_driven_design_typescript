@@ -14,6 +14,7 @@ import { IUserRole, UserRole } from "./source/domain/user-role/user-role-model";
 import { UserRoleFactory } from "./source/domain/user-role/user-role-factory";
 import { IRole, Role } from "./source/domain/role/role-model";
 import { RoleFactory } from "./source/domain/role/role-factory";
+import { UserServiceHandler } from "./source/application/user-service/user";
 
 const container = new Container();
 
@@ -37,4 +38,10 @@ container.bind<UserFactory>(TYPES.UserFactory).to(UserFactory);
 container.bind<UserRoleFactory>(TYPES.UserRoleFactory).to(UserRoleFactory);
 container.bind<RoleFactory>(TYPES.RoleFactory).to(RoleFactory);
 
+// Handlers
+container.bind<UserServiceHandler>(TYPES.UserServiceHandler).toDynamicValue(() => {
+    return new UserServiceHandler();
+  });
+
 export { container };
+

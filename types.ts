@@ -13,6 +13,8 @@ export const TYPES = {
     UserFactory: Symbol.for("UserFactory"),
     UserRoleFactory: Symbol.for("UserRoleFactory"),
     RoleFactory: Symbol.for("RoleFactory"),
+    UserServiceHandler: Symbol.for("UserServiceHandler"),
+
 
 
 

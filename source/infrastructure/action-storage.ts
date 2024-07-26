@@ -4,7 +4,6 @@
 export interface ActionConfig {
     application: string;
     className: string;
-    param: string;
   }
   
   export interface ActionStorage {
@@ -12,8 +11,10 @@ export interface ActionConfig {
   }
   
   const actionStorage: ActionStorage = {
-    getUserList: { application: "user", className: "UserServiceHandler", param: "users" }, /// direkt metodu param olarak gönder
-    getRoleList: { application: "user", className: "UserServiceHandler", param: "roles" },
+    getUserList: { application: "user", className: "UserServiceHandler" }, 
+    getRoleList: { application: "user", className: "UserServiceHandler" },
+    getProductList: { application: "product", className: "ProductServiceHandler" },
+
   };
   
   export default actionStorage;

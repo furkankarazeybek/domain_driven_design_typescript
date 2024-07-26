@@ -1,6 +1,7 @@
 import express from 'express';
 import { ProductService } from '../../domain/product/product-service';
 import { ProductCategoryService } from '../../domain/product-cateogry/product-category';
+import { injectable } from 'inversify';
 
 
 
@@ -11,6 +12,20 @@ const productService = new ProductService();
 const productCategoryRouter = express.Router();
 const productCategoryService = new ProductCategoryService();
 
+
+@injectable()
+class ProductServiceHandler {
+
+    async getProductList() {
+        try {
+          const products = await productService.getAllProducts();
+          return products;
+        } catch (error) {
+          throw error;
+        }
+      }
+
+}
 
 
 
@@ -89,4 +104,4 @@ productCategoryRouter.post('/addProductCategory', async (req, res) => {
 
 
 
-export { productRouter, productCategoryRouter };
+export { productRouter, productCategoryRouter,  ProductServiceHandler };

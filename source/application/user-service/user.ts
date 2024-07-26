@@ -1,29 +1,39 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { container } from "../../../inversify.config";
 import { TYPES } from "../../../types";
 import { RoleService } from "../../domain/role/role-service";
 import { UserRoleService } from "../../domain/user-role/user-role-service";
 import { UserService } from "../../domain/user/user-service";
 import { UserDto } from "./userDto";
+import "reflect-metadata";
 
 
-const userService = container.get<UserService>(TYPES.UserService);
-const roleService = container.get<RoleService>(TYPES.RoleService);
-const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
+console.log(container);
+// const userService = container.get<UserService>(TYPES.UserService);
+// const roleService = container.get<RoleService>(TYPES.RoleService);
+// const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
 
 
 @injectable()
 class UserServiceHandler {
-  // constructor(private param?: string) {
-  //   if (param) {
-  //     this.param = param;
-  //   }
-  // }
+ private userService : UserService;
+ private roleService : RoleService;
+
+  constructor(
+    @inject(TYPES.UserService) userService: UserService,
+    @inject(TYPES.RoleService) roleService: RoleService,
+
+    
+  ) {
+    this.userService = userService;
+    this.roleService = roleService;
+
+  }
 
   async getUserList() {
     try {
-      const users = await userService.getAllUsers();
-      const roles = await roleService.getAllRoles();
+      const users = await this.userService.getAllUsers();
+      const roles = await this.roleService.getAllRoles();
       const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles);
       return userListWithRoles;
     } catch (error) {
@@ -33,7 +43,7 @@ class UserServiceHandler {
 
   async getRoleList() {
     try {
-      const roles = await roleService.getAllRoles();
+      const roles = await this.roleService.getAllRoles();
       return roles;
     } catch (error) {
       throw error;

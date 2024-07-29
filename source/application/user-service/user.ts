@@ -1,5 +1,4 @@
 import { inject, injectable } from "inversify";
-import { container } from "../../../inversify.config";
 import { TYPES } from "../../../types";
 import { RoleService } from "../../domain/role/role-service";
 import { UserRoleService } from "../../domain/user-role/user-role-service";
@@ -8,7 +7,6 @@ import { UserDto } from "./userDto";
 import "reflect-metadata";
 
 
-console.log(container);
 // const userService = container.get<UserService>(TYPES.UserService);
 // const roleService = container.get<RoleService>(TYPES.RoleService);
 // const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
@@ -25,21 +23,31 @@ class UserServiceHandler {
 
     
   ) {
+    
     this.userService = userService;
     this.roleService = roleService;
-
   }
 
   async getUserList() {
     try {
+      console.log("USER LİSTESİ");
+      console.log("2", this.userService.getAllUsers());
       const users = await this.userService.getAllUsers();
+      console.log("Users retrieved:", users);
+  
       const roles = await this.roleService.getAllRoles();
+      console.log("Roles retrieved:", roles);
+  
       const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles);
+      console.log("USER LİSTESİ", userListWithRoles);
+  
       return userListWithRoles;
     } catch (error) {
+      console.error("An error occurred:", error); // Hata mesajını yazdır
       throw error;
     }
   }
+  
 
   async getRoleList() {
     try {

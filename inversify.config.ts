@@ -15,13 +15,20 @@ import { UserRoleFactory } from "./source/domain/user-role/user-role-factory";
 import { IRole, Role } from "./source/domain/role/role-model";
 import { RoleFactory } from "./source/domain/role/role-factory";
 import { UserServiceHandler } from "./source/application/user-service/user";
+import { ProductServiceHandler } from "./source/application/product-service/product";
+import { ApplicationStorage } from "./source/infrastructure/application-storage";
+import { ProductService } from "./source/domain/product/product-service";
+
 
 const container = new Container();
+
 
 // Services
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<RoleService>(TYPES.RoleService).to(RoleService);
 container.bind<UserRoleService>(TYPES.UserRoleService).to(UserRoleService);
+container.bind<ProductService>(TYPES.ProductService).to(ProductService);
+
 
 // Repositories
 container.bind<UserRoleRepository>(TYPES.UserRoleRepository).to(UserRoleRepository);
@@ -39,9 +46,10 @@ container.bind<UserRoleFactory>(TYPES.UserRoleFactory).to(UserRoleFactory);
 container.bind<RoleFactory>(TYPES.RoleFactory).to(RoleFactory);
 
 // Handlers
-container.bind<UserServiceHandler>(TYPES.UserServiceHandler).toDynamicValue(() => {
-    return new UserServiceHandler();
-  });
+container.bind<UserServiceHandler>(TYPES.UserServiceHandler).to(UserServiceHandler);
+container.bind<ProductServiceHandler>(TYPES.ProductServiceHandler).to(ProductServiceHandler);
 
-export { container };
 
+container.bind<ApplicationStorage>(TYPES.ApplicationStorage).to(ApplicationStorage);
+
+export default container;

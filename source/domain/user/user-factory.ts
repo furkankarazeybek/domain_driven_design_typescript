@@ -11,7 +11,7 @@ export class UserFactory {
     this.userModel = userModel;
   }
 
-  createUser(userName: string, roleId: string): IUser {
-    return new this.userModel({ userName, roleId });
+  createUser(name: string, surname:string, email:string, password: string, roleId: string): IUser {
+    return new this.userModel({ name, surname, email,password, roleId });
   }
 }

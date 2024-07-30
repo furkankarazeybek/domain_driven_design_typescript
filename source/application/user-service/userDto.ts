@@ -29,7 +29,10 @@ export class UserDto {
         const roleName: string = userRoles.map((role: any) => role.roleName).join(', '); 
         usersListWithRoles.push({
           _id: user._id,
-          userName: user.userName,
+          name: user.name,
+          surname: user.surname,
+          email: user.email,
+          password: user.password,
           roleName: roleName,
           role: userRoles
         });

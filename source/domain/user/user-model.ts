@@ -1,15 +1,21 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { UserRole } from '../user-role/user-role-model';
-import { injectable } from 'inversify';
+
+
 
 
 export interface IUser extends Document {
-  userName: string;
+  name: string;
+  surname: string;
+  email: string;
+  password: string;
   roleId: mongoose.Types.ObjectId;
 }
 
 const UserSchema: Schema = new Schema({
-  userName: { type: String, required: true },
+  name: { type: String, required: true },
+  surname: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
   roleId: { type: mongoose.Types.ObjectId, required: true, ref: 'Role' },
 });
 

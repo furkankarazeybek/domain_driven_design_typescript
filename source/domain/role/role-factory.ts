@@ -11,7 +11,7 @@ export class RoleFactory {
     this.roleModel = roleModel;
   }
 
-  createRole(roleId: number, roleName: string): IRole {
-    return  new this.roleModel({ roleId, roleName })
+  createRole( roleName: string, permissionIds: string[]): IRole {
+    return  new this.roleModel({  roleName, permissionIds })
   }
 }

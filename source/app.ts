@@ -6,19 +6,24 @@ import { TYPES } from '../types';
 import { ApplicationStorage } from './infrastructure/application-storage';
 import container  from '../inversify.config';
 import 'reflect-metadata';
+import Authorize from './infrastructure/authorize';
 
 
 connectDB();
 
-const applicationStorage = container.get<ApplicationStorage>(TYPES.ApplicationStorage);
+const applicationStorage = container.get<ApplicationStorage>(TYPES.ApplicationStorage); // authorize da böyle
+const authorize = container.get<Authorize>(TYPES.Authorize); 
 
 const app = express();
+app.use(express.json());
+
+
 const port = 3000;
 
-app.use(bodyParser.json());
+
 
 app.post('/api', async (req, res) => {
-  
+
   const { param } = req.body;
   if (!param) {
     return res.status(400).json({ error: 'Param is required' });
@@ -27,15 +32,35 @@ app.post('/api', async (req, res) => {
   let actionConfig: ActionConfig | undefined = undefined;
   let actionName: string | undefined;
   let actionApplicationName: string | undefined;
+  let permissionIdsArray: string[] = [];
 
+  
   for (const key in actionStorage) {
     if (key === param) {
       actionConfig = actionStorage[key];
       actionName = key;
+
+      permissionIdsArray.push(...actionConfig.permissionId); 
+      
       break;
     }
+
+  
+
   }
 
+    const permissionIdsList = authorize.findPermissionFromPermissionIds(permissionIdsArray);
+
+    console.log("Permissionlar", permissionIdsList);
+
+  
+
+
+  
+  
+   // rollerin permissionu var, 
+   // actionConfigten tüm permissionları authorize'a gönder
+   // authorizede eşleştir eğer o permssion o rolde varsa işlem yapabilir yoksa yapamaz
   if (!actionConfig) {
     return res.status(400).json({ error: 'Invalid param' });
   }
@@ -47,10 +72,8 @@ app.post('/api', async (req, res) => {
   }
 
   try {
-    console.log(applicationData);
-    
-    const data = await applicationData[actionName as string].call(applicationData,param);
 
+    const data = await applicationData[actionName as string].call(applicationData, req.body);
 
     res.status(200).json(data);
   } catch (error) {

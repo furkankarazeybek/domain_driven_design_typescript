@@ -4,6 +4,7 @@
 export interface ActionConfig {
     application: string;
     className: string;
+    permissionId: string;
   }
   
   export interface ActionStorage {
@@ -11,10 +12,14 @@ export interface ActionConfig {
   }
   
   const actionStorage: ActionStorage = {
-    getUserList: { application: "user", className: "UserServiceHandler" }, 
-    getRoleList: { application: "user", className: "UserServiceHandler" },
-    getProductList: { application: "product", className: "ProductServiceHandler" },
+    getUserList: { application: "user", className: "UserServiceHandler", permissionId:"1" }, 
+    getRoleList: { application: "user", className: "UserServiceHandler", permissionId:"2" }, 
+    addUser: { application: "user", className: "UserServiceHandler", permissionId:"3" }, 
+    loginUser: { application: "user", className: "UserServiceHandler", permissionId:"4" }, 
+    addUserRole: { application: "user", className: "UserServiceHandler", permissionId:"5" }, 
 
+    getProductList: { application: "product", className: "ProductServiceHandler", permissionId:"5" }, 
+    
   };
   
   export default actionStorage;

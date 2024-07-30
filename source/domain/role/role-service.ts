@@ -11,15 +11,15 @@ export class RoleService {
 
   constructor(
     @inject(TYPES.RoleRepository) roleRepository: RoleRepository,
-    @inject(TYPES.UserFactory) roleFactory: RoleFactory
+    @inject(TYPES.RoleFactory) roleFactory: RoleFactory
   ) 
   {
     this.roleFactory = roleFactory;
     this.roleRepository = roleRepository;
   }
 
-  async createRole(roleId: number, roleName: string): Promise<IRole> {
-    const role = this.roleFactory.createRole(roleId, roleName);
+  async createUserRole(roleName: string, permissionIds: string[]): Promise<IRole> {
+    const role = this.roleFactory.createRole( roleName, permissionIds);
     return this.roleRepository.createRole(role);
   }
 

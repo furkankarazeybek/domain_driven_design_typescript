@@ -5,45 +5,52 @@ import { UserRoleService } from "../../domain/user-role/user-role-service";
 import { UserService } from "../../domain/user/user-service";
 import { UserDto } from "./userDto";
 import "reflect-metadata";
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
+
 
 
 // const userService = container.get<UserService>(TYPES.UserService);
 // const roleService = container.get<RoleService>(TYPES.RoleService);
 // const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
 
+dotenv.config();
+
+export const JWT_SECRET = process.env.JWT_SECRET || 'default'; 
+export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h'; 
+
+
 
 @injectable()
 class UserServiceHandler {
  private userService : UserService;
  private roleService : RoleService;
+ private userRoleService : UserRoleService;
 
   constructor(
     @inject(TYPES.UserService) userService: UserService,
     @inject(TYPES.RoleService) roleService: RoleService,
-
+    @inject(TYPES.UserRoleService) userRoleService: UserRoleService,
     
   ) {
     
     this.userService = userService;
     this.roleService = roleService;
+    this.userRoleService = userRoleService;
   }
 
   async getUserList() {
     try {
       console.log("USER LİSTESİ");
-      console.log("2", this.userService.getAllUsers());
+
       const users = await this.userService.getAllUsers();
-      console.log("Users retrieved:", users);
-  
       const roles = await this.roleService.getAllRoles();
-      console.log("Roles retrieved:", roles);
-  
       const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles);
-      console.log("USER LİSTESİ", userListWithRoles);
-  
       return userListWithRoles;
     } catch (error) {
-      console.error("An error occurred:", error); // Hata mesajını yazdır
+      console.error("An error occurred:", error); 
       throw error;
     }
   }
@@ -57,7 +64,109 @@ class UserServiceHandler {
       throw error;
     }
   }
+
+
+  async addUser(request: any) {
+    try {
+      console.log("add user run");
+      console.log("Request Body:", request);
+
+      const hashedPassword = await bcrypt.hash(request.password, 10); 
+
+      const user = await this.userService.createUser(
+        request.name,
+        request.surname,
+        request.email,
+        hashedPassword,
+        request.roleId
+      );
+
+      const userJson = JSON.stringify(user);
+      const userObj = JSON.parse(userJson);
+      const userId = userObj._id;
+
+      await this.userRoleService.createUserRole(userId, request.roleId);
+
+      const token = jwt.sign({ id: userId, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
+      return { user, token };
+    } catch (error) {
+      console.error("error is", error);
+      throw new Error('Failed to add user');
+    }
+  }
+
+
+  async loginUser(request: any) {
+    try {
+      console.log("login user run");
+      console.log("Request Body:", request);
+
+      const { email, password } = request;
+
+      
+      const user = await this.userService.findUserByEmail(email); 
+      if (!user) {
+        throw new Error('Invalid credentials');
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password); 
+      if (!isMatch) {
+        throw new Error('Invalid credentials');
+      }
+
+      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+
+      return { user, token };
+    } catch (error) {
+      console.error("error is", error);
+      throw new Error('Failed to login');
+    }
+  }
+
+
+  async addUserRole(request: any) {
+    try {
+      console.log("add user role run");
+      console.log("Request Body:", request);
+
+
+      await this.roleService.createUserRole(
+        request.roleName,
+        request.permissionIds,
+      );
+
+    }
+
+    catch (error) {
+      console.error("error is", error);
+      throw new Error('Failed to login');
+    }
+
 }
+
+  // async addUser(request: any){ // infestracture altında interface oluştur any yerine
+  //   try {
+  //   console.log("add user run");
+  //   console.log("Request Body:", request.body); 
+  //   console.log("Reqquest:", request);
+
+
+  //   const user = await this.userService.createUser( request.name, request.surname, request.email, request.password, request.roleId);
+  //   const userJson = JSON.stringify(user);
+  //   const userObj = JSON.parse(userJson);
+  //   const userId = userObj._id;
+  //   await this.userRoleService.createUserRole(userId, request.roleId);
+  
+   
+  // } catch (error) {
+  //   console.error("error is ", error);
+
+  //   // throw  new error gelcek
+
+ 
+  //  }
+  // }
 
 
 
@@ -116,7 +225,11 @@ class UserServiceHandler {
 // });
 
 
-
+}
 
 
 export { UserServiceHandler};
+  function express() {
+    throw new Error("Function not implemented.");
+  }
+

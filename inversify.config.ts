@@ -18,6 +18,7 @@ import { UserServiceHandler } from "./source/application/user-service/user";
 import { ProductServiceHandler } from "./source/application/product-service/product";
 import { ApplicationStorage } from "./source/infrastructure/application-storage";
 import { ProductService } from "./source/domain/product/product-service";
+import Authorize from "./source/infrastructure/authorize";
 
 
 const container = new Container();
@@ -51,5 +52,8 @@ container.bind<ProductServiceHandler>(TYPES.ProductServiceHandler).to(ProductSer
 
 
 container.bind<ApplicationStorage>(TYPES.ApplicationStorage).to(ApplicationStorage);
+
+container.bind<Authorize>(TYPES.Authorize).to(Authorize);
+
 
 export default container;

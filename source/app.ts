@@ -20,8 +20,6 @@ app.use(express.json());
 
 const port = 3000;
 
-
-
 app.post('/api', async (req, res) => {
 
   const { param } = req.body;
@@ -44,20 +42,7 @@ app.post('/api', async (req, res) => {
       
       break;
     }
-
-  
-
   }
-
-    const permissionIdsList = authorize.findPermissionFromPermissionIds(permissionIdsArray);
-
-    console.log("Permissionlar", permissionIdsList);
-
-  
-
-
-  
-  
    // rollerin permissionu var, 
    // actionConfigten tüm permissionları authorize'a gönder
    // authorizede eşleştir eğer o permssion o rolde varsa işlem yapabilir yoksa yapamaz
@@ -73,9 +58,23 @@ app.post('/api', async (req, res) => {
 
   try {
 
-    const data = await applicationData[actionName as string].call(applicationData, req.body);
+    // const token = data["token"];
+    const token = req.headers['authorization']?.split(' ')[1] || '';
+    const isAuthorized = await authorize.hasPermissionFromPermissionIds(permissionIdsArray, token);
 
-    res.status(200).json(data);
+    console.log("Authorize mı  ?", isAuthorized);
+
+    if(isAuthorized)  {
+      const data = await applicationData[actionName as string].call(applicationData, req.body);
+      res.status(200).json(data);
+    }
+    else {
+      res.status(403).json("You are not authorized !");
+
+     }
+    
+    console.log(token);
+
   } catch (error) {
     res.status(500).send(error);
   }

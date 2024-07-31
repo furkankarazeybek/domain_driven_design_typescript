@@ -7,6 +7,11 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default';
 
 @injectable()
 class Authorize {
+
+    // action-storage.ts gelecek
+    // findbyıd kalkcak
+    // buraya sadece token gelcek
+    // user login yaptığında roleId ve role schemasının hepsi gelecek
     
     async hasPermissionFromPermissionIds(permissionIdThroughToken: string[], token: string): Promise<boolean> {
 

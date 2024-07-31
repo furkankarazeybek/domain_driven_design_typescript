@@ -17,7 +17,6 @@ export interface ActionConfig {
     addUser: { application: "user", className: "UserServiceHandler", permissionId:"3" }, 
     loginUser: { application: "user", className: "UserServiceHandler", permissionId:"" }, 
     addUserRole: { application: "user", className: "UserServiceHandler", permissionId:"4" }, 
-
     getProductList: { application: "product", className: "ProductServiceHandler", permissionId:"5" }, 
     
   };

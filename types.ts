@@ -4,7 +4,6 @@ export const TYPES = {
     UserService: Symbol.for("UserService"),
     RoleService: Symbol.for("RoleService"),
     ProductService: Symbol.for("ProductService"),
-
     UserRoleService: Symbol.for("UserRoleService"),
     UserRoleRepository: Symbol.for("UserRoleRepository"),
     UserRepository: Symbol.for("UserRepository"),
@@ -18,6 +17,8 @@ export const TYPES = {
     UserServiceHandler: Symbol.for("UserServiceHandler"),
     ProductServiceHandler: Symbol.for("ProductServiceHandler"),
     ApplicationStorage: Symbol.for("ApplicationStorage"),
+    Authorize: Symbol.for("Authorize"),
+
 
 
 

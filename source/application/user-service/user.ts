@@ -5,7 +5,6 @@ import { UserRoleService } from "../../domain/user-role/user-role-service";
 import { UserService } from "../../domain/user/user-service";
 import { UserDto } from "./userDto";
 import "reflect-metadata";
-import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -16,11 +15,9 @@ import jwt from 'jsonwebtoken';
 // const roleService = container.get<RoleService>(TYPES.RoleService);
 // const userRoleService = container.get<UserRoleService>(TYPES.UserRoleService);
 
-dotenv.config();
 
 export const JWT_SECRET = process.env.JWT_SECRET || 'default'; 
 export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h'; 
-
 
 
 @injectable()

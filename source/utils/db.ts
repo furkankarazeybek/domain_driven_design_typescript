@@ -1,18 +1,20 @@
-import mongoose from 'mongoose';
+
+import { MongoClient } from 'mongodb';
+
 require('dotenv').config();
 
-const dbUrl: string = process.env.DB_URI || '';
+const url: string = process.env.DB_URI || '';
+const dbName = 'test';
+let db: any;
+
+
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(dbUrl, {
-            
-        });
-        console.log(`database connected`);
-    } catch (error) {
-        console.log(error);
-        setTimeout(connectDB, 5000);
-    }
+    const client = new MongoClient(url);
+    await client.connect();
+    db = client.db(dbName);
+    console.log('MongoDB connected');
 };
 
-export default connectDB;
+
+export { connectDB, db };

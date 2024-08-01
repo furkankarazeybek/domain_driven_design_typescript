@@ -19,23 +19,22 @@ export class UserService {
 
 
   async createUser(name: string, surname: string, email:string, password:string, roleId: string): Promise<IUser> {
-    
-    const user = this.userFactory.createUser(name,surname, email, password, roleId);
-    return this.userRepository.createUser(user);
-
+      const user = this.userFactory.createUser(name,surname, email, password, roleId);
+      return user;
   }
+  
 
   async getAllUsers(): Promise<IUser[]> {
-    return this.userRepository.findAll();
+    return this.userRepository.findAllUsers();
   }
 
   async getUserById(id: string): Promise<IUser | null> {
-    return this.userRepository.findById(id);
+    return this.userRepository.findUserById(id);
   }
 
   async findUserByEmail(email: string): Promise<IUser | null> {
     try {
-      const user = await this.userRepository.findByEmail(email);
+      const user = await this.userRepository.findUserByEmail(email);
       return user;
     } catch (error) {
       console.error("An error occurred while finding the user by email:", error);

@@ -20,7 +20,7 @@ export class RoleService {
 
   async createUserRole(roleName: string, permissionIds: string[]): Promise<IRole> {
     const role = this.roleFactory.createRole( roleName, permissionIds);
-    return this.roleRepository.createRole(role);
+    return role;
   }
 
   async getRoleById(id: string): Promise<IRole | null> {

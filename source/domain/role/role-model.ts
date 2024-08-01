@@ -1,13 +1,9 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-export interface IRole extends Document {
+interface IRole {
+  _id: ObjectId;
   roleName: string;
-  permissionIds: Array<string>; 
+  permissionIds: string[];
 }
 
-const RoleSchema: Schema = new Schema({
-  roleName: { type: String, required: true },
-  permissionIds: { type: [String], required: true } 
-});
-
-export const Role = mongoose.model<IRole>('Role', RoleSchema);
+export { IRole };

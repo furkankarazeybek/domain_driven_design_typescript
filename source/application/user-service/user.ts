@@ -84,9 +84,10 @@ class UserServiceHandler {
 
       await this.userRoleService.createUserRole(userId, request.roleId);
 
-      const token = jwt.sign({ id: userId, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const roleObj = await this.roleService.getRoleById(user.roleId.toHexString());
 
-      return { user, token };
+
+      return { user };
     } catch (error) {
       console.error("error is", error);
       throw new Error('Failed to add user');
@@ -112,7 +113,9 @@ class UserServiceHandler {
         throw new Error('Invalid credentials');
       }
 
-      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+      const roleObj = await this.roleService.getRoleById(user.roleId.toHexString());
+
+      const token = jwt.sign({ id: user._id, email: user.email, role: roleObj}, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
       return { user, token };
     } catch (error) {
@@ -229,4 +232,3 @@ export { UserServiceHandler};
   function express() {
     throw new Error("Function not implemented.");
   }
-

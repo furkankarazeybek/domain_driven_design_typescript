@@ -1,17 +1,19 @@
-import { injectable, inject } from 'inversify';
-import { Model } from 'mongoose';
+import { injectable } from 'inversify';
 import { IUser } from './user-model';
-import { TYPES } from '../../../types';
 
 @injectable()
 export class UserFactory {
-  private userModel: Model<IUser>;
-
-  constructor(@inject(TYPES.UserModel) userModel: Model<IUser>) {
-    this.userModel = userModel;
-  }
-
-  createUser(name: string, surname:string, email:string, password: string, roleId: string): IUser {
-    return new this.userModel({ name, surname, email,password, roleId });
+  
+  // createUser metodunun dönüş değerini IUser tipinde döndürmeliyiz.
+  createUser(name: string, surname: string, email: string, password: string, roleId: string): IUser {
+    return {
+      _id: new ObjectId(), // MongoDB tarafından otomatik oluşturulur
+      name: name,
+      surname: surname,
+      email: email,
+      password: password,
+      roleId: new ObjectId(roleId), // `roleId` string'ini `ObjectId`'ye dönüştürün
+      rolePermissionIds: [] // Eğer başlangıçta boş bir dizi varsa
+    } as IUser;
   }
 }

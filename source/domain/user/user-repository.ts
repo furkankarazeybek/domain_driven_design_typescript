@@ -1,23 +1,32 @@
-import { injectable } from 'inversify';
-import { User, IUser } from './user-model';
+import {  injectable } from 'inversify';
+import { ObjectId } from 'mongodb';
+import { IUser } from './user-model';
+import { db } from '../../utils/db';
 
 @injectable()
 export class UserRepository {
+ 
 
-  async findAll(): Promise<IUser[]> { 
-    return User.find().exec();
-  }
+  // async createUser (user: IUser) : Promise<IUser> {
+  //   const userCollection = db.collection('users');
+  //   return await userCollection.insertOne(user);
+  // };
+  
+  private collectionName = 'users';
 
-  async findById(id: string): Promise<IUser | null> {
-    return User.findById(id).exec();
-  }
-
-  async createUser(user: IUser): Promise<IUser> {
-    return user.save();
-  }
-
-  async findByEmail(email: string): Promise<IUser | null> {
-    return User.findOne({ email }).exec();
-  }
+  async findUserById (id: string) : Promise<IUser | null>  {
+    const userCollection = db.collection(this.collectionName);
+    return await userCollection.findOne({ _id:  new ObjectId(id) });
+  };
+  
+  async findUserByEmail (email: string) : Promise<IUser | null> {
+    const userCollection = db.collection(this.collectionName);
+    return await userCollection.findOne({ email });
+  };
+  
+  async findAllUsers ()  : Promise<IUser[]>  {
+    const userCollection = db.collection(this.collectionName);
+    return await userCollection.find().toArray();
+  };
 
 }

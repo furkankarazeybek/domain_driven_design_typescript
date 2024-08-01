@@ -1,19 +1,29 @@
 import { injectable } from 'inversify';
-import { Role, IRole } from './role-model';
+import {  IRole } from './role-model';
+import { db } from '../../utils/db';
+import { ObjectId } from 'mongodb';
 
 
 @injectable()
 export class RoleRepository {
+
+
+  private collectionName = "roles";
+  // async createRole(role: IRole): Promise<void>  {
+  //   const roleCollection = db.collection('roles');
+  //   await roleCollection.insertOne(role);
+  // }
+
   async findById(id: string): Promise<IRole | null> {
-    return Role.findById(id).exec();
+    const roleCollection = db.collection(this.collectionName);
+    const objectId = new ObjectId(id);
+    return await roleCollection.findOne({ _id:  objectId });
   }
 
-  async createRole(role: IRole): Promise<IRole> {
-    return role.save();
-  }
 
   async findAll(): Promise<IRole[]> { 
-    return Role.find().exec();
+    const roleCollection = db.collection(this.collectionName);
+    return await roleCollection.find().toArray();
   }
 
 }

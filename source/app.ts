@@ -1,85 +1,101 @@
-import express from 'express';
-import bodyParser from 'body-parser';
+import http from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import actionStorage, { ActionConfig } from './infrastructure/action-storage';
 import connectDB from './utils/db';
 import { TYPES } from '../types';
 import { ApplicationStorage } from './infrastructure/application-storage';
-import container  from '../inversify.config';
+import container from '../inversify.config';
 import 'reflect-metadata';
 import Authorize from './infrastructure/authorize';
 
-
 connectDB();
 
-const applicationStorage = container.get<ApplicationStorage>(TYPES.ApplicationStorage); // authorize da böyle
-const authorize = container.get<Authorize>(TYPES.Authorize); 
-
-const app = express();
-app.use(express.json());
-
+const applicationStorage = container.get<ApplicationStorage>(TYPES.ApplicationStorage);
+const authorize = container.get<Authorize>(TYPES.Authorize);
 
 const port = 3000;
 
-app.post('/api', async (req, res) => {
+const server = http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
 
-  const { param } = req.body;
-  if (!param) {
-    return res.status(400).json({ error: 'Param is required' });
+  res.setHeader('Access-Control-Allow-Origin', '*'); // * yazan kısma ip adresi gelcek. sadece burdan gelen istekler kabul edilecek.
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); 
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); 
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204); // 204 = içerik gelmez ama başarılı olduğunu gösterir
+    res.end();
+    return;
   }
 
-  let actionConfig: ActionConfig | undefined = undefined;
-  let actionName: string | undefined;
-  let actionApplicationName: string | undefined;
-  let permissionIdsArray: string[] = [];
+  if (req.method !== 'POST') {
+    res.writeHead(405, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Method Not Allowed' }));
+    return;
+  }
 
-  
-  for (const key in actionStorage) {
-    if (key === param) {
-      actionConfig = actionStorage[key];
-      actionName = key;
+  let body = '';
+  req.on('data', chunk => {  
+    body += chunk.toString();
+  });
 
-      permissionIdsArray.push(...actionConfig.permissionId); 
-      
-      break;
+  req.on('end', async () => { // bodyden datayı aldıktan sonra tetiklenir
+    try {
+      const parsedBody = JSON.parse(body);
+      const { param } = parsedBody;
+
+      if (!param) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Param is required' }));
+        return;
+      }
+
+      let actionConfig: ActionConfig | undefined = undefined;
+      let actionName = '';
+      let actionApplicationName = '';
+
+      for (const key in actionStorage) {
+        if (key === param) {
+          actionConfig = actionStorage[key];
+          actionName = key;
+          break;
+        }
+      }
+
+      if (!actionConfig) {
+        res.writeHead(400, { 'Content-Type': 'application/json' }); // application/json tarayıcı için gerekli 
+        res.end(JSON.stringify({ error: 'Invalid param' }));
+        return;
+      }
+
+      const token = req.headers['authorization']?.toString().split(' ')[1] || '';
+      const isAuthorized = await authorize.hasPermission(actionName, token);
+
+      console.log("Authorize mı  ?", isAuthorized);
+
+      if (isAuthorized) {
+        actionApplicationName = actionConfig.className;
+        const applicationData = applicationStorage.getApplication(actionApplicationName);
+
+        if (!applicationData) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ error: 'Invalid application name' }));
+          return;
+        }
+
+        const data = await applicationData[actionName as string].call(applicationData, parsedBody);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(data));
+      } else {
+        res.writeHead(403, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'You are not authorized!' }));
+      }
+    } catch (error) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Internal Server Error' }));
     }
-  }
-   // rollerin permissionu var, 
-   // actionConfigten tüm permissionları authorize'a gönder
-   // authorizede eşleştir eğer o permssion o rolde varsa işlem yapabilir yoksa yapamaz
-  if (!actionConfig) {
-    return res.status(400).json({ error: 'Invalid param' });
-  }
-  actionApplicationName = actionConfig.className;
-
-  const applicationData = applicationStorage.getApplication(actionApplicationName);
-  if (!applicationData) {
-    return res.status(400).json({ error: 'Invalid application name' });
-  }
-
-  try {
-
-    // const token = data["token"];
-    const token = req.headers['authorization']?.split(' ')[1] || '';
-    const isAuthorized = await authorize.hasPermissionFromPermissionIds(permissionIdsArray, token);
-
-    console.log("Authorize mı  ?", isAuthorized);
-
-    if(isAuthorized)  {
-      const data = await applicationData[actionName as string].call(applicationData, req.body);
-      res.status(200).json(data);
-    }
-    else {
-      res.status(403).json("You are not authorized !");
-
-     }
-    
-    console.log(token);
-
-  } catch (error) {
-    res.status(500).send(error);
-  }
+  });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

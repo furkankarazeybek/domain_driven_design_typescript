@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-
+import { IRole, Role } from '../role/role-model';
 
 export interface IUser extends Document {
   name: string;
@@ -7,7 +7,10 @@ export interface IUser extends Document {
   email: string;
   password: string;
   roleId: mongoose.Types.ObjectId;
+  rolePermissionIds: IRole['permissionIds']; 
 }
+
+
 
 const UserSchema: Schema = new Schema({
   name: { type: String, required: true },
@@ -17,19 +20,14 @@ const UserSchema: Schema = new Schema({
   roleId: { type: mongoose.Types.ObjectId, required: true, ref: 'Role' },
 });
 
-// UserSchema.virtual('role', {
-//     ref: 'Role',            
-//     localField: 'roleId',   
-//     foreignField: 'roleId',    
-//     justOne: true           
-//   });
+UserSchema.virtual('role', {
+  ref: 'Role',            // İlişkilendirilecek modelin adı
+  localField: 'roleId',   // User modelindeki referans alanı
+  foreignField: '_id',    // Role modelindeki referans alanı
+  justOne: false           // Tek bir rol ile ilişkilendiriliyor
+});
 
+UserSchema.set('toObject', { virtuals: true });
+UserSchema.set('toJSON', { virtuals: true });
 
-//   UserSchema.post<IUser>('save', async function (doc) {
-//     try { 
-//       await UserRole.create({ userId: doc._id, roleId: doc.roleId });
-//     } catch (error) {
-//       console.error('Error adding userRole:', error);
-//     }
-//   });
 export const User = mongoose.model<IUser>('User', UserSchema);

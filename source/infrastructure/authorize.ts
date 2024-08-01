@@ -1,51 +1,37 @@
 import { injectable } from "inversify";
 import jwt from "jsonwebtoken";
-import { User } from "../domain/user/user-model";
-import { Role } from "../domain/role/role-model";
+import { IRole } from "../domain/role/role-model";
+import actionStorage from "./action-storage";
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'default';
 
 @injectable()
 class Authorize {
 
-    // action-storage.ts
-    // findbyıd kalkcak
-    // buraya sadece token gelcek
-    // user login yaptığında roleId ve role
     
-    async hasPermissionFromPermissionIds(permissionIdThroughToken: string[], token: string): Promise<boolean> {
-
-        if (permissionIdThroughToken.length === 0) {
-            return  true;
-        }
-
+    async hasPermission(param: string, token: string): Promise<boolean> {
+        
         try {
-            const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string; email: string };
-            const { id } = decodedToken;
 
-            const user = await User.findById(id).exec();
-            if (!user) {
-                throw new Error("User not found");
+            const actionConfig = actionStorage[param];
+            if (!actionConfig) {
+                throw new Error(`Action for parameter "${param}" not found.`);
+              }
+            
+            const requiredPermissionId = actionConfig.permissionId;
+    
+            if(requiredPermissionId === "") {
+                return true;
             }
-            const { roleId } = user;
-            console.log("User's roleId:", roleId);
+            
+            const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string; email: string, role: IRole };
+            const roleInfo  = decodedToken.role;
+            const permissionIds: string[] = roleInfo.permissionIds;
 
-            const role = await Role.findById(roleId).exec();
-            if (!role) {
-                throw new Error("Role not found");
-            }
-            const { permissionIds } = role;
-            console.log("Role's permissionIds:", permissionIds);
-
-            console.log("PermissionIds through token:", permissionIdThroughToken);
-
-            const hasRequiredPermissions = permissionIdThroughToken.every(permissionId => 
-                permissionIds.includes(permissionId) || permissionId === ""
-            );
-
-            // console.log(hasRequiredPermissions);
-
-            return hasRequiredPermissions;
+            const hasPermission = permissionIds.includes(requiredPermissionId);
+            
+            return hasPermission;
 
         } catch (error) {
             console.error("Error finding permissions:", error);

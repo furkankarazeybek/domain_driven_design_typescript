@@ -25,6 +25,7 @@ class Authorize {
             }
             
             const decodedToken = jwt.verify(token, JWT_SECRET) as { id: string; email: string, role: IRole };
+            console.log(decodedToken);
             const roleInfo  = decodedToken.role;
             const permissionIds: string[] = roleInfo.permissionIds;
 

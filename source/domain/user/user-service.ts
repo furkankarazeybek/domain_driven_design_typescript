@@ -20,6 +20,8 @@ export class UserService {
 
   async createUser(name: string, surname: string, email:string, password:string, roleId: string): Promise<IUser> {
       const user = this.userFactory.createUser(name,surname, email, password, roleId);
+      await this.userRepository.createUser(user);
+
       return user;
   }
   

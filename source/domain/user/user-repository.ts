@@ -6,14 +6,13 @@ import { db } from '../../utils/db';
 @injectable()
 export class UserRepository {
  
-
-  // async createUser (user: IUser) : Promise<IUser> {
-  //   const userCollection = db.collection('users');
-  //   return await userCollection.insertOne(user);
-  // };
-  
   private collectionName = 'users';
 
+  async createUser (user: IUser) : Promise<IUser> {
+    const userCollection = db.collection('users');
+    return await userCollection.insertOne(user);
+  };
+  
   async findUserById (id: string) : Promise<IUser | null>  {
     const userCollection = db.collection(this.collectionName);
     return await userCollection.findOne({ _id:  new ObjectId(id) });

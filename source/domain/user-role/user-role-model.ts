@@ -1,13 +1,9 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
-export interface IUserRole extends Document {
-  userId: String;
-  roleId: String;
+export interface IUserRole {
+  _id: ObjectId;
+  userId: string;
+  roleId: string;
+  
 }
 
-const UserRoleSchema: Schema = new Schema({
-  userId: { type: String, required: true, ref: 'User' },
-  roleId: { type: String, required: true, ref: 'Role' }
-});
-
-export const UserRole = mongoose.model<IUserRole>('UserRole', UserRoleSchema);

@@ -18,8 +18,10 @@ export class RoleService {
     this.roleRepository = roleRepository;
   }
 
-  async createUserRole(roleName: string, permissionIds: string[]): Promise<IRole> {
-    const role = this.roleFactory.createRole( roleName, permissionIds);
+  async createRole(roleName: string, permissionIds: string[]): Promise<IRole> {
+    const role = this.roleFactory.createRole(roleName, permissionIds);
+    await this.roleRepository.createRole(role);
+
     return role;
   }
 

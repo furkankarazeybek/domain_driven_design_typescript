@@ -1,15 +1,24 @@
 import { injectable } from 'inversify';
-import { UserRole, IUserRole } from './user-role-model';
+import {  IUserRole } from './user-role-model';
+import { ObjectId } from 'mongodb';
+import { db } from '../../utils/db';
 
 
 @injectable()
 export class UserRoleRepository {
-  async findById(id: string): Promise<IUserRole | null> {
-    return UserRole.findById(id).exec();
+
+  private collectionName = "userroles";
+  async createUserRole(userRole: IUserRole): Promise<void>  {
+    const roleCollection = db.collection('roles');
+    await roleCollection.insertOne(userRole);
   }
 
-  async createUserRole(userRole: IUserRole): Promise<IUserRole> {
-    return userRole.save();
+  async findById(id: string): Promise<IUserRole | null> {
+    const useRoleCollection = db.collection(this.collectionName);
+    const objectId = new ObjectId(id);
+    return await useRoleCollection.findOne({ _id:  objectId });
   }
+
+
 
 }

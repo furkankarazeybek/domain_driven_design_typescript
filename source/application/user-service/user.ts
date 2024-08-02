@@ -84,8 +84,6 @@ class UserServiceHandler {
 
       await this.userRoleService.createUserRole(userId, request.roleId);
 
-      const roleObj = await this.roleService.getRoleById(user.roleId.toHexString());
-
 
       return { user };
     } catch (error) {
@@ -113,7 +111,7 @@ class UserServiceHandler {
         throw new Error('Invalid credentials');
       }
 
-      const roleObj = await this.roleService.getRoleById(user.roleId.toHexString());
+      const roleObj = await this.roleService.getRoleById(user.roleId);
 
       const token = jwt.sign({ id: user._id, email: user.email, role: roleObj}, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 
@@ -131,7 +129,7 @@ class UserServiceHandler {
       console.log("Request Body:", request);
 
 
-      await this.roleService.createUserRole(
+      await this.roleService.createRole(
         request.roleName,
         request.permissionIds,
       );

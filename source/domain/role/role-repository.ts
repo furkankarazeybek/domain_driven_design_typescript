@@ -9,10 +9,10 @@ export class RoleRepository {
 
 
   private collectionName = "roles";
-  // async createRole(role: IRole): Promise<void>  {
-  //   const roleCollection = db.collection('roles');
-  //   await roleCollection.insertOne(role);
-  // }
+  async createRole(role: IRole): Promise<void>  {
+    const roleCollection = db.collection('roles');
+    await roleCollection.insertOne(role);
+  }
 
   async findById(id: string): Promise<IRole | null> {
     const roleCollection = db.collection(this.collectionName);

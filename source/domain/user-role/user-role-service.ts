@@ -20,9 +20,10 @@ export class UserRoleService {
   }
 
   async createUserRole(userId: string, roleId: string): Promise<IUserRole> {
-    const userRole = this.userRoleFactory.createUser(userId, roleId);
-    console.log(userRole);
-    return this.userRoleRepository.createUserRole(userRole);
+    const userRole = this.userRoleFactory.createUserRole(userId, roleId);
+    await this.userRoleRepository.createUserRole(userRole);
+
+    return userRole;
   }
 
   async getUserRoleById(id: string): Promise<IUserRole | null> {

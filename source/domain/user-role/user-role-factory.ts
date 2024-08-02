@@ -1,18 +1,18 @@
 import { injectable, inject } from 'inversify';
-import { Model } from 'mongoose';
 import { IUserRole } from './user-role-model';
-import { TYPES } from '../../../types';
+import { ObjectId } from 'mongodb';
 
 @injectable()
 export class UserRoleFactory {
-  private userRoleModel: Model<IUserRole>;
 
-  constructor(@inject(TYPES.UserRoleModel) userRoleModel: Model<IUserRole>) {
-    this.userRoleModel = userRoleModel;
-  }
+  createUserRole(userId: string, roleId: string) :  IUserRole {
 
- createUser(userId: string, roleId: string): IUserRole{
-  
-    return new this.userRoleModel({ userId, roleId });
-  }
-}
+     return {
+       _id: new ObjectId(), 
+       userId: userId,
+       roleId: roleId,
+    
+     } as IUserRole;
+   }
+
+ }

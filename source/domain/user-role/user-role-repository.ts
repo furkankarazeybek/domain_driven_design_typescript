@@ -9,7 +9,7 @@ export class UserRoleRepository {
 
   private collectionName = "userroles";
   async createUserRole(userRole: IUserRole): Promise<void>  {
-    const roleCollection = db.collection('roles');
+    const roleCollection = db.collection('userroles');
     await roleCollection.insertOne(userRole);
   }
 

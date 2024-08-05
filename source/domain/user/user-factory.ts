@@ -14,7 +14,7 @@ export class UserFactory {
       email: email,
       password: password,
       roleId: roleId,
-      rolePermissionIds: [] 
+      isDeleted : false
     } as IUser;
   }
 }

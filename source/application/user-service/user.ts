@@ -51,6 +51,30 @@ class UserServiceHandler {
       throw error;
     }
   }
+
+  async getUserById(request: any) {
+
+    const { userId } = request;
+    const user = await this.userService.getUserById(userId); 
+  
+    if (!user) {
+      throw new Error('Invalid credentials');
+    }
+    return { user };
+  }
+
+  async deleteUser(request: any) {
+    const { userId } = request;
+    const user = await this.userService.deleteUser(userId); 
+
+  }
+
+
+  async updateUser(request: any) {
+    const { userId, ...updatedUser } = request;
+    await this.userService.updateUser(userId, updatedUser);
+    return { message: 'User updated successfully' };
+  }
   
 
   async getRoleList() {

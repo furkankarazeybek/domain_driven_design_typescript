@@ -16,9 +16,11 @@ export class UserDto {
         const user = users[userIndex];
         const userRoles: any[] = [];
 
+        const roleId = userRoleIds[userIndex];
+
         for (let i = 0; i < 1; i++) {
-          const roleId = userRoleIds[i];
           const role = roles.find((p: any) => p._id.equals(roleId));
+
       
           if (role) {
             userRoles.push(role);

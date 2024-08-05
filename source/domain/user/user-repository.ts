@@ -28,4 +28,22 @@ export class UserRepository {
     return await userCollection.find().toArray();
   };
 
+
+  async deleteUser(id: string): Promise<void> {
+    const userCollection = db.collection(this.collectionName);
+    const result = await userCollection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      throw new Error(`User with ID ${id} not found`);
+    }
+  };
+
+  async updateUser(id: string, updatedUser: Partial<IUser>): Promise<void> {
+    const userCollection = db.collection(this.collectionName);
+    await userCollection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updatedUser }
+    );
+  }
+  
+
 }

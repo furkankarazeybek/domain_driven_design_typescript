@@ -17,7 +17,6 @@ export class UserService {
     this.userRepository = userRepository;
   }
 
-
   async createUser(name: string, surname: string, email:string, password:string, roleId: string): Promise<IUser> {
       const user = this.userFactory.createUser(name,surname, email, password, roleId);
       await this.userRepository.createUser(user);
@@ -25,7 +24,6 @@ export class UserService {
       return user;
   }
   
-
   async getAllUsers(): Promise<IUser[]> {
     return this.userRepository.findAllUsers();
   }
@@ -33,6 +31,11 @@ export class UserService {
   async getUserById(id: string): Promise<IUser | null> {
     return this.userRepository.findUserById(id);
   }
+
+  async deleteUser(id: string): Promise<void> {
+      return await this.userRepository.deleteUser(id);
+    }
+  
 
   async findUserByEmail(email: string): Promise<IUser | null> {
     try {
@@ -44,7 +47,9 @@ export class UserService {
     }
   }
 
-
+  async updateUser(id: string, updatedUser: Partial<IUser>): Promise<void> {
+    return this.userRepository.updateUser(id, updatedUser);
+  }
 
 
 }

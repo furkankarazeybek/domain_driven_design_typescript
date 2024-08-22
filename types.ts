@@ -1,19 +1,24 @@
-
-
 export const TYPES = {
     UserService: Symbol.for("UserService"),
     RoleService: Symbol.for("RoleService"),
     ProductService: Symbol.for("ProductService"),
+    ProductCategoryService: Symbol.for("ProductCategoryService"),
     UserRoleService: Symbol.for("UserRoleService"),
-    UserRoleRepository: Symbol.for("UserRoleRepository"),
+    
+
     UserRepository: Symbol.for("UserRepository"),
     RoleRepository: Symbol.for("RoleRepository"),
-    // UserModel: Symbol.for('UserModel'),
-    // UserRoleModel: Symbol.for('UserRoleModel'),
-    // // RoleModel: Symbol.for('RoleModel'),
+    ProductRepository: Symbol.for("ProductRepository"),
+    ProductCategoryRepository: Symbol.for("ProductCategoryRepository"),
+    UserRoleRepository: Symbol.for("UserRoleRepository"),
+
     UserFactory: Symbol.for("UserFactory"),
-    UserRoleFactory: Symbol.for("UserRoleFactory"),
     RoleFactory: Symbol.for("RoleFactory"),
+    ProductFactory: Symbol.for("ProductFactory"),
+    ProductCategoryFactory: Symbol.for("ProductCategoryFactory"),
+    UserRoleFactory: Symbol.for("UserRoleFactory"),
+
+
     UserServiceHandler: Symbol.for("UserServiceHandler"),
     ProductServiceHandler: Symbol.for("ProductServiceHandler"),
     ApplicationStorage: Symbol.for("ApplicationStorage"),

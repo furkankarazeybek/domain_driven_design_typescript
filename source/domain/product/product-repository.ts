@@ -1,51 +1,32 @@
-import axios from 'axios';
-import { MongoClient, ObjectId } from 'mongodb';
-require('dotenv').config();
+import {  injectable } from 'inversify';
+import { ObjectId } from 'mongodb';
+import { IProduct } from './product-model';
+import { db } from '../../utils/db';
 
+@injectable()
 export class ProductRepository {
-  private client: MongoClient;
-  private dbName = 'productsDb';
-  private collectionName = 'productsCollection';
+ 
+  private collectionName = 'products';
+
+  async createProduct (product: IProduct) : Promise<IProduct> {
+    const productCollection = db.collection(this.collectionName);
+    return await productCollection.insertOne(product);
+  };
+  
+  async findAllProducts ()  : Promise<IProduct[]>  {
+    const productCollection = db.collection(this.collectionName);
+    return await productCollection.find().toArray();
+  };
 
 
-
-
-  constructor() {
-    this.client = new MongoClient(process.env.USER_DB_URI || "");
-  }
-
-  async findAll() {
-    await this.client.connect();
-    const db = this.client.db(this.dbName);
-    const collection = db.collection(this.collectionName);
-    return await collection.find().toArray();
-  }
-
-  async create(productData: any) {
-    try {
-      await this.client.connect();
-      const db = this.client.db(this.dbName);
-      const collection = db.collection(this.collectionName);
-      await collection.insertOne(productData);
-    } catch (error) {
-      console.error('Error while inserting product:', error);
-      throw error; 
+  async deleteProduct(id: string): Promise<void> {
+    const productCollection = db.collection(this.collectionName);
+    const result = await productCollection.deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      throw new Error(`Product with ID ${id} not found`);
     }
-  }
-
-
-  async findProductsByIds(productIds: string[]) {
-    await this.client.connect();
-    const db = this.client.db(this.dbName);
-    const collection = db.collection(this.collectionName);
-
-    return collection;
-
-  }
-
+  };
 
 
 
 }
-
-

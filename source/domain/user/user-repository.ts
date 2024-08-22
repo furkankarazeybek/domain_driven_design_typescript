@@ -9,7 +9,7 @@ export class UserRepository {
   private collectionName = 'users';
 
   async createUser (user: IUser) : Promise<IUser> {
-    const userCollection = db.collection('users');
+    const userCollection = db.collection(this.collectionName);
     return await userCollection.insertOne(user);
   };
   

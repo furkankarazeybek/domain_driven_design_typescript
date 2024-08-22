@@ -7,6 +7,7 @@ import { UserDto } from "./userDto";
 import "reflect-metadata";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { ProductService } from "../../domain/product/product-service";
 
 
 
@@ -25,17 +26,22 @@ class UserServiceHandler {
  private userService : UserService;
  private roleService : RoleService;
  private userRoleService : UserRoleService;
+ private productService : ProductService;
 
   constructor(
     @inject(TYPES.UserService) userService: UserService,
     @inject(TYPES.RoleService) roleService: RoleService,
     @inject(TYPES.UserRoleService) userRoleService: UserRoleService,
+    @inject(TYPES.ProductService) productService: ProductService,
+
     
   ) {
     
     this.userService = userService;
     this.roleService = roleService;
     this.userRoleService = userRoleService;
+    this.productService = productService;
+
   }
 
   async getUserList() {
@@ -44,7 +50,9 @@ class UserServiceHandler {
 
       const users = await this.userService.getAllUsers();
       const roles = await this.roleService.getAllRoles();
-      const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles);
+      const products = await this.productService.getAllProducts();
+      
+      const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles, products);
       return userListWithRoles;
     } catch (error) {
       console.error("An error occurred:", error); 
@@ -167,90 +175,8 @@ class UserServiceHandler {
 
 }
 
-  // async addUser(request: any){ // infestracture altında interface oluştur any yerine
-  //   try {
-  //   console.log("add user run");
-  //   console.log("Request Body:", request.body); 
-  //   console.log("Reqquest:", request);
-
-
-  //   const user = await this.userService.createUser( request.name, request.surname, request.email, request.password, request.roleId);
-  //   const userJson = JSON.stringify(user);
-  //   const userObj = JSON.parse(userJson);
-  //   const userId = userObj._id;
-  //   await this.userRoleService.createUserRole(userId, request.roleId);
-  
-   
-  // } catch (error) {
-  //   console.error("error is ", error);
-
-  //   // throw  new error gelcek
-
- 
-  //  }
-  // }
-
-
-
-// class UserServiceHandler {
-//   private param?: string;
-
-//   constructor();
-//   constructor(param: string);
-//   constructor(param?: string) {
-//     if (param) {
-//       this.param = param;
-//     }
-//   }
-
-//   private actionMap: { [key: string]: () => Promise<any> } = {  //javadaki hashmap 
-//     users: async () => {
-//       const users = await userService.getAllUsers();
-//       const roles = await roleService.getAllRoles();
-//       const userListWithRoles = UserDto.getRoleIdsFromEntities(users, roles);
-//       return userListWithRoles;
-//     },
-//     roles: async () => {
-//       const roles = await roleService.getAllRoles();
-//       return roles;
-//     }
-//   };
-
-//   async getUserData(param: string) {
-//     const action = this.actionMap[param];
-//     if (action) {
-//       try {
-//         return await action();
-//       } catch (error) {
-//         throw error;
-//       }
-//     } else {
-//       throw new Error(`Invalid param: ${param}`);
-//     }
-//   }
-// }
-
-
-// userRouter.post('/addUser', async (req, res) => {
-//   try {
-//     const { userName, roleId } = req.body;
-//     const user = await userService.createUser(userName, roleId);
-//     const userJson = JSON.stringify(user);
-//     const userObj = JSON.parse(userJson);
-//     const userId = userObj._id;
-//     userRoleService.createUserRole(userId, roleId);
-
-//     res.status(201).json(user);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Internal server error', error });
-//   }
-// });
-
 
 }
 
 
 export { UserServiceHandler};
-  function express() {
-    throw new Error("Function not implemented.");
-  }

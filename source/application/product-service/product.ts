@@ -1,107 +1,118 @@
 import express from 'express';
 import { ProductService } from '../../domain/product/product-service';
-import { ProductCategoryService } from '../../domain/product-cateogry/product-category';
-import { injectable } from 'inversify';
+import { ProductCategoryService } from '../../domain/product-category/product-category-service';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../types';
 
 
 
-const productRouter = express.Router();
-const productService = new ProductService();
+// const productRouter = express.Router();
+// const productService = new ProductService();
 
 
-const productCategoryRouter = express.Router();
-const productCategoryService = new ProductCategoryService();
+// const productCategoryRouter = express.Router();
+// const productCategoryService = new ProductCategoryService();
 
 
 @injectable()
 class ProductServiceHandler {
 
+    private productService : ProductService;
+    private productCategoryService : ProductCategoryService;
+  
+   
+     constructor(
+       @inject(TYPES.ProductService) productService: ProductService,
+       @inject(TYPES.ProductCategoryService) productCategoryService: ProductCategoryService,
+       
+     ) {
+       
+       this.productService = productService;
+       this.productCategoryService = productCategoryService;
+     }
+
     async getProductList() {
         try {
-          const products = await productService.getAllProducts();
-          return products;
+          const products = await this.productService.getAllProducts();
+          const categories = await this.productCategoryService.getAllProductCategories();
+      
+          const categoryMap = new Map<string, { _id: string; categoryName: string }>();
+          categories.forEach((category:any) => {
+            categoryMap.set(category._id.toString(), { _id: category._id.toString(), categoryName: category.categoryName });
+          });
+      
+          const productsWithCategory = products.map(product => {
+            const categoryIdStr = product.productCategoryId.toString(); // productCategoryId'yi string'e çeviriyoruz
+            return {
+              ...product,
+              productCategory: categoryMap.get(categoryIdStr) || null,
+            };
+          });
+      
+          return productsWithCategory;
         } catch (error) {
           throw error;
         }
+    }
+      
+
+    async getProductCategoriesList() {
+        try {
+            const productCategories = await this.productCategoryService.getAllProductCategories();
+            return productCategories;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+
+
+    async addProduct (request: any) {
+        try {
+          console.log("add user role run");
+          console.log("Request Body:", request);
+    
+    
+          await this.productService.createProduct(
+            request.productName,
+            request.productCategoryId
+          );
+   
+        }
+   
+       catch (error) {
+         console.error("error is", error);
+         throw new Error('Failed to login');
+       }
+       
       }
+
+    async addProductCategory(request: any) {
+     try {
+       console.log("add user role run");
+       console.log("Request Body:", request);
+ 
+ 
+       await this.productCategoryService.createProductCategory(
+         request.categoryName,
+       );
+
+     }
+
+    catch (error) {
+      console.error("error is", error);
+      throw new Error('Failed to login');
+    }
+    
+   }
+
+   
+  
 
 }
 
 
 
-productRouter.get('/getAllproducts', async (req, res) => {
-    try {
-      
-    } catch (error) {
-        console.error("Error while fetching products:", error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
 
-productRouter.post('/addProduct', async (req, res) => {
-    const { productName, productCategoryId } = req.body;
-
-    if (!productName) {
-        return res.status(400).json({ error: 'Product name is required' });
-    }
-
-    try {
-        const newProduct = await productService.addProduct({ productName, productCategoryId });
-        res.status(201).json(newProduct);
-    } catch (error) {
-        console.error("Error while adding product:", error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-
-productRouter.get('/productsByIds', async (req, res) => {
-    const { ids } = req.query;
-    if (!ids) {
-      return res.status(400).json({ error: 'Product IDs are required' });
-    }
-  
-    const productIds = (ids as string).split(',');
-  
-    try {
-      const products = await productService.getProductsById(productIds);
-      res.json(products);
-    } catch (error) {
-      console.error("Error while fetching products:", error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  });
-
-productCategoryRouter.get('/getAllProductCategories', async (req, res) => {
-    try {
-        const productCategories = await productCategoryService.getAllProductCategories();
-        res.json(productCategories);
-    } catch (error) {
-        console.error("Error while fetching product categories:", error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-productCategoryRouter.post('/addProductCategory', async (req, res) => {
-    const { productCategoryName } = req.body;
-
-    if (!productCategoryName) {
-        return res.status(400).json({ error: 'Product name is required' });
-    }
-
-    try {
-        const newProductCategory = await productCategoryService.addProductCategory({ productCategoryName });
-        res.status(201).json(newProductCategory);
-    } catch (error) {
-        console.error("Error while adding product:", error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
-
-
-
-
-
-
-
-export { productRouter, productCategoryRouter,  ProductServiceHandler };
+export { ProductServiceHandler};
+ 

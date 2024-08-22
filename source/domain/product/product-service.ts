@@ -1,50 +1,33 @@
-import { ObjectId } from 'mongodb';
-import { ProductRepository } from './product-repository';
+import { TYPES } from '../../../types';
 import { ProductFactory } from './product-factory';
+import { IProduct } from './product-model';
+import { ProductRepository } from './product-repository';
+import { inject, injectable } from "inversify";
 
-
-export interface IProduct {
-    productName: string;
-    productCategoryId : string;
-    
-}
+@injectable()
 export class ProductService {
-  getAllProductCategories() {
-      throw new Error('Method not implemented.');
-  }
   private productRepository: ProductRepository;
   private productFactory: ProductFactory;
 
-  constructor() {
-    this.productRepository = new ProductRepository();
-    this.productFactory = new ProductFactory();
-  
-    
+  constructor(
+    @inject(TYPES.ProductRepository) productRepository: ProductRepository,
+    @inject(TYPES.ProductFactory) productFactory: ProductFactory
+  ) 
+  {
+    this.productFactory = productFactory;
+    this.productRepository = productRepository;
   }
 
-  async getAllProducts() {
-    return this.productRepository.findAll();
+  async createProduct(productName: string, productCategoryId: string): Promise<IProduct> {
+    const product = this.productFactory.createProduct(productName, productCategoryId);
+    await this.productRepository.createProduct(product);
+
+    return product;
   }
 
-  
-  async addProduct(product: IProduct) {
-    try {
-     this.productRepository.create(product);
-    } catch (error) {
-        throw new Error('Error while adding product');
-    }
-   }
 
-   async getProductsById (productIds: string[]){
-
-    const collection = await this.productRepository.findProductsByIds(productIds);
-    const objectIds = this.productFactory.generateProduct(productIds);
-    return collection.find({ _id: { $in: objectIds } }).toArray();  // mongodb kalkacak
-    
-
-   }
-
+  async getAllProducts(): Promise<IProduct[]> {
+    return this.productRepository.findAllProducts();
+  }
 
 }
-
-

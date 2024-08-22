@@ -15,6 +15,11 @@ import { ProductServiceHandler } from "./source/application/product-service/prod
 import { ApplicationStorage } from "./source/infrastructure/application-storage";
 import { ProductService } from "./source/domain/product/product-service";
 import Authorize from "./source/infrastructure/authorize";
+import { ProductRepository } from "./source/domain/product/product-repository";
+import { ProductFactory } from "./source/domain/product/product-factory";
+import { ProductCategoryService } from "./source/domain/product-category/product-category-service";
+import { ProductCategoryRepository } from "./source/domain/product-category/product-category-repository";
+import { ProductCategoryFactory } from "./source/domain/product-category/product-category-factory";
 
 
 const container = new Container();
@@ -25,23 +30,26 @@ container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<RoleService>(TYPES.RoleService).to(RoleService);
 container.bind<UserRoleService>(TYPES.UserRoleService).to(UserRoleService);
 container.bind<ProductService>(TYPES.ProductService).to(ProductService);
+container.bind<ProductCategoryService>(TYPES.ProductCategoryService).to(ProductCategoryService);
 
 
 // Repositories
 container.bind<UserRoleRepository>(TYPES.UserRoleRepository).to(UserRoleRepository);
 container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository);
 container.bind<RoleRepository>(TYPES.RoleRepository).to(RoleRepository);
+container.bind<ProductRepository>(TYPES.ProductRepository).to(ProductRepository);
+container.bind<ProductCategoryRepository>(TYPES.ProductCategoryRepository).to(ProductCategoryRepository);
 
-// Models
 
-// container.bind<Model<IUser>>(TYPES.UserModel).toConstantValue(User);
-// // container.bind<Model<IUserRole>>(TYPES.UserRoleModel).toConstantValue(UserRole);
-// container.bind<Model<IRole>>(TYPES.RoleModel).toConstantValue(Role);
 
 // Factories
 container.bind<UserFactory>(TYPES.UserFactory).to(UserFactory);
 container.bind<UserRoleFactory>(TYPES.UserRoleFactory).to(UserRoleFactory);
 container.bind<RoleFactory>(TYPES.RoleFactory).to(RoleFactory);
+container.bind<ProductFactory>(TYPES.ProductFactory).to(ProductFactory);
+container.bind<ProductCategoryFactory>(TYPES.ProductCategoryFactory).to(ProductCategoryFactory);
+
+
 
 // Handlers
 container.bind<UserServiceHandler>(TYPES.UserServiceHandler).to(UserServiceHandler);
